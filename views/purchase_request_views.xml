@@ -1,17 +1,20 @@
 <odoo>
-   <record id="view_purchase_request_form" model="ir.ui.view">
+  <record id="view_purchase_request_form" model="ir.ui.view">
         <field name="name">purchase.request.form</field>
         <field name="model">purchase.request</field>
         <field name="arch" type="xml">
             <form string="Purchase Request">
                 <header>
                     <button name="action_request" string="Request" type="object"  class="btn-primary"/>
-                    <button name="action_approve" string="Approve" type="object"  class="btn-success"/>
+                    <button name="action_approve" string="Approve" type="object" class="btn-success"/>
                     <button name="action_generate_rfq" string="Generate RFQ" type="object"  class="btn-secondary"/>
                     <button name="action_confirm_order" string="Confirm Order" type="object"  class="btn-success"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <!-- Add any required buttons for quick actions here -->
+                    </div>
                     <group>
                         <field name="name"/>
                         <field name="description"/>
@@ -28,10 +31,23 @@
                             </tree>
                         </field>
                     </group>
+                    <notebook>
+                        <page string="Additional Information">
+                            <group>
+                                <!-- Add any additional fields or configuration needed here -->
+                            </group>
+                        </page>
+                    </notebook>
                 </sheet>
+                <!-- Chatter -->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="message_ids"/>
+                </div>
             </form>
         </field>
     </record>
+
 
     <record id="view_purchase_request_tree" model="ir.ui.view">
         <field name="name">purchase.request.tree</field>
@@ -54,6 +70,6 @@
         <field name="view_id" ref="view_purchase_request_tree"/>
     </record>
 
-    <menuitem id="menu_purchase_request_root" name="Purchase Requests" parent="purchase.menu_purchase_root" sequence="10"/>
+   <menuitem id="menu_purchase_request_root" name="Purchase Requests" sequence="10"/>
     <menuitem id="menu_purchase_request" name="Requests" parent="menu_purchase_request_root" action="action_purchase_request" sequence="10"/>
 </odoo>

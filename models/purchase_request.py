@@ -7,7 +7,7 @@ class PurchaseRequest(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(string='Request Reference', required=True, copy=False, readonly=True,
-                       default=lambda self: _('New'))
+                       default=lambda self: self.env['ir.sequence'].next_by_code('purchase.request') or _('New'))
     description = fields.Text(string='Description')
     request_date = fields.Date(string='Request Date', default=fields.Date.context_today, required=True)
     requested_by = fields.Many2one('res.users', string='Requested By', default=lambda self: self.env.user, readonly=True)
