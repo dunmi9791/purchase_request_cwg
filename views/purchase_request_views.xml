@@ -5,11 +5,12 @@
         <field name="arch" type="xml">
             <form string="Purchase Request">
                 <header>
-                    <button name="action_request" string="Request" type="object"  class="btn-primary"/>
-                    <button name="action_approve" string="Approve" type="object" class="btn-success"/>
-                    <button name="action_generate_rfq" string="Generate RFQ" type="object"  class="btn-secondary"/>
-                    <button name="action_confirm_order" string="Confirm Order" type="object"  class="btn-success"/>
+                    <button name="action_request" string="Request" type="object"  class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_approve" string="Approve" type="object" class="btn-success" invisible="state != 'requested'"/>
+                    <button name="action_generate_rfq" string="Generate RFQ" type="object"  class="btn-secondary" invisible="state != 'approved'"/>
+                    <button name="action_confirm_order" string="Confirm Order" type="object"  class="btn-success" invisible="state != 'rfq'"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,requested,approved,rfq,order"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -21,13 +22,13 @@
                         <field name="request_date"/>
                         <field name="requested_by"/>
                         <field name="approved_by"/>
-                        <field name="state"/>
                     </group>
                     <group string="Products">
                         <field name="product_ids">
                             <tree editable="bottom">
                                 <field name="product_id"/>
                                 <field name="quantity"/>
+                                <field name="estimated_price"/>
                             </tree>
                         </field>
                     </group>

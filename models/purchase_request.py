@@ -7,7 +7,7 @@ class PurchaseRequest(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(string='Request Reference', required=True, copy=False, readonly=True,
-                       default=lambda self: self.env['ir.sequence'].next_by_code('purchase.request') or _('New'))
+                       default=lambda self:  _('New'), track_visibility='onchange')
     description = fields.Text(string='Description')
     request_date = fields.Date(string='Request Date', default=fields.Date.context_today, required=True)
     requested_by = fields.Many2one('res.users', string='Requested By', default=lambda self: self.env.user, readonly=True)
@@ -28,7 +28,7 @@ class PurchaseRequest(models.Model):
         self.state = 'requested'
 
     def action_approve(self):
-        if not self.env.user.has_group('purchase_request.group_purchase_manager'):
+        if not self.env.user.has_group('purchase_request_cwg.group_purchase_manager'):
             raise UserError(_('Only a manager can approve a purchase request.'))
         self.state = 'approved'
         self.approved_by = self.env.user
@@ -42,7 +42,7 @@ class PurchaseRequest(models.Model):
             'order_line': [(0, 0, {
                 'product_id': line.product_id.id,
                 'product_qty': line.quantity,
-                'price_unit': line.product_id.standard_price,
+                'price_unit': line.estimated_price,
                 'date_planned': fields.Date.today(),
             }) for line in self.product_ids]
         })
@@ -60,6 +60,14 @@ class PurchaseRequest(models.Model):
             raise UserError(_('You need to generate an RFQ before confirming an order.'))
         self.state = 'order'
 
+    @api.model
+    def create(self, values):
+        if values.get('name', _('New')) == _('New'):
+            values['name'] = self.env['ir.sequence'].next_by_code('increment_purchase_request') or _('New')
+        requisition = super(PurchaseRequest, self).create(values)
+        # Perform additional actions upon creation if needed
+        return requisition
+
 
 class PurchaseRequestLine(models.Model):
     _name = 'purchase.request.line'
@@ -68,3 +76,4 @@ class PurchaseRequestLine(models.Model):
     request_id = fields.Many2one('purchase.request', string='Purchase Request', required=True, ondelete='cascade')
     product_id = fields.Many2one('product.product', string='Product', required=True)
     quantity = fields.Float(string='Quantity', required=True, default=1.0)
+    estimated_price = fields.Float(string='Estimated price', required=False, default=1.0)

@@ -27,6 +27,7 @@ Long description of module's purpose
         'views/templates.xml',
         'security/purchase_request_security.xml',
         'views/purchase_request_views.xml',
+        'data/sequence.xml'
     ],
     # only loaded in demonstration mode
     'demo': [
